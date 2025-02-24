@@ -10,8 +10,8 @@ import seaborn as sns
 from scipy.stats import pearsonr
 
 from detectors import SCurveDetector, ExponentialDetector, LinearDetector, DecayDetector
-from transformers import SCurveTransformer
-from visualization import PatternVisualizer
+from transformers import LogitTransformer, LogTransformer, IdentityTransformer
+
 
 class FeatureAnalyser:
     def __init__(self, correlation_threshold = 0.7):
@@ -167,41 +167,6 @@ class FeatureAnalyser:
             summary.append(f"\nRecommended transformation: {transformations[feature_name]}")
 
         return "\n".join(summary)
-
-class LogTransformer:
-    def fit(self, X):
-        self.min_val = np.min(X)
-        return self
-    
-    def transform(self, X):
-        return np.log1p(X - self.min_val + 1)
-    
-    def fit_transform(self, X):
-        return self.fit(X).transform(X)
-
-class LogitTransformer:
-    def fit(self, X):
-        self.min_val = np.min(X)
-        self.max_val = np.max(X)
-        return self
-    
-    def transform(self, X):
-        X_scaled = (X - self.min_val) / (self.max_val - self.min_val)
-        X_scaled = np.clip(X_scaled, 0.001, 0.999)
-        return np.log(X_scaled / (1 - X_scaled))
-    
-    def fit_transform(self, X):
-        return self.fit(X).transform(X)
-
-class IdentityTransformer:
-    def fit(self, X):
-        return self
-    
-    def transform(self, X):
-        return X
-    
-    def fit_transform(self, X):
-        return X
 
 # Function to plot scatter and compute correlation
 def plot_and_analyze(x_var, y_var, df):
