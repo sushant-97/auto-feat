@@ -168,20 +168,41 @@ class FeatureAnalyser:
 
         return "\n".join(summary)
 
-# Function to plot scatter and compute correlation
-def plot_and_analyze(x_var, y_var, df):
-    plt.figure(figsize=(6, 4))
-    sns.scatterplot(x=df[x_var], y=df[y_var], alpha=0.5)
-    plt.xlabel(x_var)
-    plt.ylabel(y_var)
-    plt.title(f"f{x_var} vs {y_var}")
-    plt.axhline(0, color='red', linestyle='--', alpha=0.5)
-    plt.axvline(0, color='red', linestyle='--', alpha=0.5)
-    plt.show()
+# Plot comparison
+def plot_comparison(df_original, df_transformed):
+    # Define features and their labels
+    features = {
+        'linear_var': 'Linear Variable',
+        'quadratic_var': 'Quadratic Variable',
+        'exponential_var': 'Exponential Variable',
+        'logarithmic_var': 'Logarithmic Variable',
+        's_curve_var': 'S-Curve Variable',
+        'decay_var': 'Decay Variable'
+    }
     
-    # Compute Pearson correlation
-    corr, p_value = pearsonr(df[x_var], df[y_var])
-    print(f"feature vs target:\n Pearson Correlation: {corr:.4f}, P-value: {p_value:.4e}\n")
+    # Create subplot grid
+    fig, axes = plt.subplots(len(features), 2, figsize=(15, 20))
+    fig.suptitle('Feature Transformation Comparison', fontsize=16, y=1.02)
+    
+    # Plot each feature
+    for idx, (feature, label) in enumerate(features.items()):
+        # Original data
+        axes[idx, 0].scatter(df_original['target'], df_original[feature], 
+                           alpha=0.5, color='blue')
+        axes[idx, 0].set_title(f'Original {label}')
+        axes[idx, 0].set_xlabel('Target')
+        axes[idx, 0].set_ylabel(label)
+        
+        # Transformed data
+        axes[idx, 1].scatter(df_transformed['target'], df_transformed[feature], 
+                           alpha=0.5, color='green')
+        axes[idx, 1].set_title(f'Transformed {label}')
+        axes[idx, 1].set_xlabel('Target')
+        axes[idx, 1].set_ylabel(f'Transformed {label}')
+    
+    # Adjust layout
+    plt.tight_layout()
+    return fig
 
 
 # Example usage
@@ -200,23 +221,37 @@ if __name__ == "__main__":
     # })
 
     # Generate independent variables with different relationships
+    # df = pd.DataFrame({
+    #     # 'linear_var': np.random.normal(0, 1, n_samples),  
+    #     # 'quadratic_var': np.random.normal(0, 1, n_samples)**2,  
+    #     # 'exponential_var': np.exp(np.random.normal(0, 1, n_samples)), 
+    #     'exponential_var': np.exp(np.random.uniform(-2, 5, n_samples)), 
+    #     # 'logarithmic_var': np.log(np.abs(np.random.normal(0, 1, n_samples)) + 1),  
+    #     # 'random_var': np.random.normal(0, 1, n_samples)  # Random noise feature
+    # })
+
+    # # Define a single target variable using a weighted combination of all features
+    # df['target'] = (
+    #     # 0.1 * df['linear_var'] + 
+    #     0.2 * np.sqrt(df['quadratic_var']) +
+    #     0.8 * np.log(df['exponential_var'] + 1)
+    #     # np.random.normal(0, 0.5, n_samples)  # Adding some noise
+    # )
+
     df = pd.DataFrame({
-        # 'linear_var': np.random.normal(0, 1, n_samples),  
-        # 'quadratic_var': np.random.normal(0, 1, n_samples)**2,  
-        # 'exponential_var': np.exp(np.random.normal(0, 1, n_samples)), 
-        'exponential_var': np.exp(np.random.uniform(-2, 5, n_samples)), 
-        # 'logarithmic_var': np.log(np.abs(np.random.normal(0, 1, n_samples)) + 1),  
-        # 'random_var': np.random.normal(0, 1, n_samples)  # Random noise feature
+        'target': np.linspace(1, 100, n_samples)
     })
 
-    # Define a single target variable using a weighted combination of all features
-    df['target'] = (
-        # 0.1 * df['linear_var'] + 
-        # 0.1 * np.sqrt(df['quadratic_var']) +
-        0.8 * np.log(df['exponential_var'] + 1)
-        # np.random.normal(0, 0.5, n_samples)  # Adding some noise
-    )
-    plot_and_analyze('exponential_var', 'target', df)
+    df['linear_var'] = 0.5 * df['target'] + 0.02 * np.random.normal(0, 5, n_samples)  # Linear relationship
+    df['quadratic_var'] = 0.01 * df['target']**2 + 0.02 * np.random.normal(0, 5, n_samples)  # Quadratic pattern
+    df['exponential_var'] = np.exp(df['target'] / 20) + 0.02 * np.random.normal(0, 0.5, n_samples)  # Exponential
+    df['logarithmic_var'] = np.log(df['target'] + 1) + 0.02 * np.random.normal(0, 0.2, n_samples)  # Logarithmic
+    df['s_curve_var'] = 1 / (1 + np.exp(-0.1 * (df['target'] - 50))) + 0.02 * np.random.normal(0, 0.02, n_samples)  # S-curve
+    df['decay_var'] = np.exp(-df['target'] / 30) + 0.02 * np.random.normal(0, 0.02, n_samples)  # Decay
+
+
+    # for feature in df.columns:
+    #     plot_and_analyze(feature, 'target', df)
 
     analyzer = FeatureAnalyser(correlation_threshold=0.7)
     results = analyzer.analyze_dataset(df, 'target')
@@ -233,7 +268,13 @@ if __name__ == "__main__":
     # Transform features based on analysed patttern
     df_transformed = analyzer.transform_features(df)
 
-    plot_and_analyze('exponential_var', 'target', df_transformed)
+    print("FEAUTRES TARANFORMED")
+    # plot_transformed_relations(df, df_transformed, target_var="target")
+    # Create and show plots
+    fig = plot_comparison(df, df_transformed)
+    plt.savefig("plot_comparision.png")
+    plt.show()
+
 
 
     # Print correlation improvements
