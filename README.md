@@ -63,4 +63,8 @@ class BaseTransformer:
 ```
 
 ## 3. Before and After Transformation:
+### S Curve:
 ![Alt text](s_curve_transform.png)
+
+### Other Patterns
+![Alt text](plot_comparision.png)
