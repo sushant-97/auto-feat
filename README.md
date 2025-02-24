@@ -5,6 +5,7 @@ automatic feature engineering
 ![Alt text](s_curve_transform.png)
 
 # Project Strucutre
+```
 src/
 ├── detectors/
 │   ├── __init__.py
@@ -19,6 +20,7 @@ src/
 │   ├── __init__.py
 │   └── pattern_visualizer.py
 └── main.py
+```
 
 Before and After Transformation:
 ![Alt text](s_curve_transform.png)
