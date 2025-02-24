@@ -6,7 +6,6 @@ automatic feature engineering
 ## 1. Project Strucutre
 ```
 src/
-├── __init__.py
 ├── main.py               # Main class and orchestration
 ├── detectors/           # Pattern detection modules
 │   ├── __init__.py
