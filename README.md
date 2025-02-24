@@ -29,37 +29,48 @@ src/
 
 ```python
 # detectors/base.py
-class BaseDetector:
+class BasePatternDetector(ABC):
+    """
+    Base class for all pattern detectors.
+    This should fit the current pattern on the given variables and return the parameters and respective score.
+    """
+    
     def __init__(self):
         self.params = {}
         self.fit_score = 0.0
         
     @abstractmethod
-    def detect(self, x: np.ndarray, y: np.ndarray) -> bool:
-        """Detect if pattern exists in data"""
+    def detect(self, x, y):
+        """Detect if the pattern exists in the data."""
         pass
     
     @abstractmethod
-    def get_parameters(self) -> Dict:
-        """Return pattern parameters"""
+    def get_parameters(self):
+        """Return the parameters of the fitted pattern."""
         pass
     
-    def get_fit_score(self) -> float:
-        """Return goodness of fit"""
+    def get_fit_score(self):
+        """Return the goodness of fit score."""
         return self.fit_score
 
 # transformers/base.py
-class BaseTransformer:
+class BaseTransformer(ABC):
+    """Base class for all feature transformers."""
+    
     @abstractmethod
-    def fit(self, X: np.ndarray) -> 'BaseTransformer':
+    def fit(self, X):
+        """Fit the transformer to the data."""
         pass
     
     @abstractmethod
-    def transform(self, X: np.ndarray) -> np.ndarray:
+    def transform(self, X):
+        """Transform the input feature."""
         pass
     
-    def fit_transform(self, X: np.ndarray) -> np.ndarray:
+    def fit_transform(self, X):
+        """Fit the transformer and transform the data."""
         return self.fit(X).transform(X)
+
 ```
 
 ## 3. Before and After Transformation:
