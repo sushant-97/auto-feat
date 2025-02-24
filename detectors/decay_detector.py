@@ -2,6 +2,7 @@
 from .base_detecor import BasePatternDetector
 import numpy as np
 from scipy.optimize import curve_fit
+from sklearn.metrics import mean_squared_error
 from typing import Dict, Any
 
 class DecayDetector(BasePatternDetector):
@@ -31,7 +32,8 @@ class DecayDetector(BasePatternDetector):
             
             # Calculate R² score
             y_pred = self.decay_function(x, *popt)
-            self.fit_score = 1 - np.sum((y - y_pred) ** 2) / np.sum((y - y.mean()) ** 2)
+            # self.fit_score = 1 - np.sum((y - y_pred) ** 2) / np.sum((y - y.mean()) ** 2)
+            self.fit_score = mean_squared_error(y, y_pred)
             
             # Store parameters
             self.params = {

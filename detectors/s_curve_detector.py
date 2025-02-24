@@ -1,5 +1,6 @@
 # src/detectors/s_curve_detector.py
 from scipy.optimize import curve_fit
+from sklearn.metrics import mean_squared_error
 from .base_detecor import BasePatternDetector
 import numpy as np
 from typing import Dict, Any
@@ -24,8 +25,9 @@ class SCurveDetector(BasePatternDetector):
             
             # Calculate R² score
             y_pred = self.logistic_function(x_norm, *popt)
-            self.fit_score = 1 - np.sum((y_norm - y_pred) ** 2) / np.sum((y_norm - y_norm.mean()) ** 2)
-            print("S curve fit score:", self.fit_score)
+            # self.fit_score = 1 - np.sum((y_norm - y_pred) ** 2) / np.sum((y_norm - y_norm.mean()) ** 2)
+            self.fit_score = mean_squared_error(y_norm, y_pred)
+            # print("S curve fit score:", self.fit_score)
             # Store parameters
             self.params = {
                 'L': popt[0] * (y.max() - y.min()) + y.min(),

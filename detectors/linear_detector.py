@@ -2,6 +2,7 @@
 from .base_detecor import BasePatternDetector
 import numpy as np
 from scipy import stats
+from sklearn.metrics import mean_squared_error
 from typing import Dict, Any
 
 class LinearDetector(BasePatternDetector):
@@ -13,11 +14,18 @@ class LinearDetector(BasePatternDetector):
         try:
             slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
 
-            # r2_score
-            self.fit_score = r_value ** 2
+            # Predict y values using the fitted linear model
+            y_pred = slope * x + intercept
+
+            # Compute Mean Squared Error (MSE)
+            self.fit_score = mean_squared_error(y, y_pred)
+
+            # # r2_score
+            # self.fit_score = r_value ** 2
             # print(self.fit_score)
             # print(p_value)
             # Store parameters
+            
             self.params = {
                 'slope': slope,
                 'intercept': intercept,
